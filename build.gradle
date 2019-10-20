@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.aurora.store'
+version = '1.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.aurora.store.tokendispenser.Server'
+        )
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+repositories {
+
+    maven { url "https://jitpack.io" }
+    maven { url "https://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    compile 'com.github.whyorean:playstore-api-v2:2.3'
+    compile 'com.squareup.okhttp3:okhttp:4.0.1'
+    compile 'com.sparkjava:spark-core:2.8.0'
+    compile 'org.slf4j:slf4j-api:2.0.0-alpha0'
+    compile 'org.slf4j:slf4j-simple:2.0.0-alpha0'
+}
