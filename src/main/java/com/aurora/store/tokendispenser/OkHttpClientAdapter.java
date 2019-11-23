@@ -5,6 +5,7 @@ import com.dragons.aurora.playstoreapiv2.GooglePlayAPI;
 import com.dragons.aurora.playstoreapiv2.GooglePlayException;
 import com.dragons.aurora.playstoreapiv2.HttpClientAdapter;
 import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,12 +26,13 @@ class OkHttpClientAdapter extends HttpClientAdapter {
                     private final HashMap<HttpUrl, List<Cookie>> cookieStore = new HashMap<HttpUrl, List<Cookie>>();
 
                     @Override
-                    public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+                    public void saveFromResponse(@NotNull HttpUrl url, @NotNull List<Cookie> cookies) {
                         cookieStore.put(url, cookies);
                     }
 
+                    @NotNull
                     @Override
-                    public List<Cookie> loadForRequest(HttpUrl url) {
+                    public List<Cookie> loadForRequest(@NotNull HttpUrl url) {
                         List<Cookie> cookies = cookieStore.get(url);
                         return cookies != null ? cookies : new ArrayList<Cookie>();
                     }
@@ -95,7 +97,6 @@ class OkHttpClientAdapter extends HttpClientAdapter {
 
     private byte[] post(String url, Request.Builder requestBuilder, Map<String, String> headers) throws IOException {
         requestBuilder.url(url);
-
         return request(requestBuilder, headers);
     }
 

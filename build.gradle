@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 
 group = 'com.aurora.store'
-version = '1.0'
+version = '1.1'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.whyorean:playstore-api-v2:2.3'
+    compile 'com.github.whyorean:playstore-api-v2:2.4'
     compile 'com.squareup.okhttp3:okhttp:4.0.1'
     compile 'com.sparkjava:spark-core:2.8.0'
     compile 'org.slf4j:slf4j-api:2.0.0-alpha0'

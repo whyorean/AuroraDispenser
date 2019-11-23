@@ -6,6 +6,9 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -13,21 +16,31 @@ import java.util.Random;
 
 public class Server {
 
-    public static final Logger LOG = LoggerFactory.getLogger(Server.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(Server.class.getName());
 
     static Map<String, String> authMap = new HashMap<>();
 
-    static {
-        authMap.put("username@gmail.com", "password");
-    }
-
     public static void main(String[] args) {
-        String host = "0.0.0.0";
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(System.getProperty("credentials")));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] credential = line.split(" ");
+                authMap.put(credential[0], credential[1]);
+            }
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String host = System.getProperty("host", "0.0.0.0");
         // Google auth requests are not fast, so lets limit max simultaneous threads
         Spark.threadPool(32, 2, 5000);
         Spark.ipAddress(host);
-        Spark.port(8443/*getHerokuAssignedPort()*/);
-        Spark.secure("your_keystore", "your_keystore_password", null, null);
+        Spark.port(Integer.parseInt(System.getProperty("port", "8080")));
+
+        if (System.getProperty("keystore") != null) {
+            Spark.secure(System.getProperty("keystore"), System.getProperty("keystore_password"), null, null);
+        }
 
         Spark.before((req, res) -> {
             LOG.info(req.requestMethod() + " " + req.url());
@@ -39,7 +52,6 @@ public class Server {
         Spark.get("/", (req, res) -> "Aurora Token Dispenser");
         Spark.get("/status", (req, res) -> "Token dispenser is alive !");
         Spark.get("/token/email/:email", (req, res) -> new TokenResource().handle(req, res));
-        Spark.get("/token-ac2dm/email/:email", (req, res) -> new TokenAc2dmResource().handle(req, res));
         Spark.get("/email", (req, res) -> getRandomEmail(req, res));
         Spark.notFound((req, res) -> "You are lost !");
     }
@@ -47,7 +59,17 @@ public class Server {
     private static Response getRandomEmail(Request request, Response response) {
         Object[] keyArray = authMap.keySet().toArray();
         Object key = keyArray[new Random().nextInt(keyArray.length)];
-        response.body(key.toString());
+        String email = key.toString();
+        if (email == null || email.isEmpty()) {
+            String body = "Could not retrieve email from server";
+            int status = 500;
+            Spark.halt(status, body);
+            response.status(status);
+            response.body(body);
+        } else {
+            response.status(200);
+            response.body(key.toString());
+        }
         return response;
     }
 
