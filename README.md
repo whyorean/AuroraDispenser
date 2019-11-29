@@ -1,5 +1,9 @@
 # Aurora Token Dispenser
 
+Token Dispenser is used to provide anonymous authToken for [Aurora Store](`/build/libs/`) , 
+in order to allow anonymous login. The dispenser stores email & passwords of dummy
+accounts and generates authToken for PlayStore.
+
 ### Building
 1. `git clone https://github.com/yeriomin/token-dispenser`
 
