@@ -52,6 +52,7 @@ public class Server {
         Spark.get("/", (req, res) -> "Aurora Token Dispenser");
         Spark.get("/status", (req, res) -> "Token dispenser is alive !");
         Spark.get("/token/email/:email", (req, res) -> new TokenResource().handle(req, res));
+        Spark.get("/tokenwithgsf/email/:email", (req, res) -> new TokenResourceWithGSF().handle(req, res));
         Spark.get("/email", (req, res) -> getRandomEmail(req, res));
         Spark.notFound((req, res) -> "You are lost !");
     }
