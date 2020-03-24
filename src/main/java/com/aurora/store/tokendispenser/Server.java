@@ -53,6 +53,7 @@ public class Server {
         Spark.get("/status", (req, res) -> "Token dispenser is alive !");
         Spark.get("/token/email/:email", (req, res) -> new TokenResource().handle(req, res));
         Spark.get("/tokenwithgsf/email/:email", (req, res) -> new TokenResourceWithGSF().handle(req, res));
+        Spark.get("/getDownloadUrl/package/:package/code/:code/offer/:offer", (req, res) -> new TokenResourceWithBuyResponse().handle(req, res));
         Spark.get("/email", (req, res) -> getRandomEmail(req, res));
         Spark.notFound((req, res) -> "You are lost !");
     }
@@ -72,6 +73,12 @@ public class Server {
             response.body(key.toString());
         }
         return response;
+    }
+
+    public static String getRandomEmail() {
+        Object[] keyArray = authMap.keySet().toArray();
+        Object key = keyArray[new Random().nextInt(keyArray.length)];
+        return key.toString();
     }
 
     private static int getHerokuAssignedPort() {
